@@ -1,0 +1,167 @@
+component Node inherits Rectangle{
+    callback clicked;
+    in property <bool> active: false;
+
+
+    min-height: 20px;
+    min-width: 20px;
+    in property <string> text;
+
+    // property <bool> active: false;
+
+    Rectangle {
+        background: active ? red:  #193076;
+
+    //     ta := TouchArea{
+    //         clicked => {active = !active}
+        }
+
+    // }
+    TouchArea {
+        clicked => {
+            // Delegate to the user of this element
+            root.clicked();
+        }
+    }
+    Text {text: root.text; color: #151716;}
+
+    Path {
+        x: root.x;
+    }
+}
+
+struct NodeData{
+
+    active: bool,
+    row_index: int,
+    col_index: int,
+
+}
+
+
+
+export component MainWindow inherits Window {
+    // width: 326px;
+    // height: 326px;
+
+
+
+    in property <[NodeData]> nodes: [];
+
+    callback update();
+
+    in property <int> row_count: 5;
+    in property <[string]> rows:[
+        "row_1", "row_2", "row_3","row_4","row_5"
+     ];
+
+    in property <int> col_count: 3;
+    in property <[string]> columns:[
+       "col_1", "col_2", "col_3"
+    ];
+
+
+
+ Rectangle {
+    width: root.width;
+    height: root.height;
+    property <physical-length> box_size: min(
+        (self.width / (col_count+2)), (self.height/(row-count+2))
+    );
+    property <physical-length> spacing: 1px;
+
+    for col_name[i] in columns : Node {      
+        x: (i +1) * (box_size + spacing);
+        y: 0;
+
+        text: col_name;
+        width: box_size;
+        height: box_size;
+
+    }
+
+
+    for row_names[i] in rows : Node {   
+        x: 0 ;   
+        y: (i +1) * (box_size + spacing);
+
+        text: row_names;
+        width: box_size;
+        height: box_size;
+
+    }
+
+     for node[i] in nodes: Node{
+        x: (node.col-index + 1) * (box_size + spacing);
+        y: (node.row-index + 1) * (box_size + spacing);
+
+        width: box_size;
+        height: box_size;
+
+        // text: "row" + node.row-index + " - col" + node.col-index;
+
+        clicked => {
+            self.active = !self.active;
+            root.update();
+        }
+    }
+
+ }
+
+   
+}
+
+    //  VerticalLayout{
+    //     //
+    //     spacing: 5px;
+     
+
+    //     HorizontalLayout{
+            
+    //         spacing: 5px;
+    //         Node{
+    //             text: "";
+    //         }
+
+    //         for col_name[j] in columns : Node {
+                
+    //             text: col_name;
+
+         
+    //             width: 64px;
+    //             height: 64px;
+    
+               
+    //     }
+    //     }
+    //     for row_names[i] in rows : HorizontalLayout {
+
+
+
+    //         spacing: 5px;
+    //        //add row title
+    //         Node{
+    //             text: row_names;
+    //             width: 64px;
+    //             height: 64px;
+    //         }
+
+    //         for col_name[j] in columns : Node {
+                
+              
+                
+    //             // x: i * 74px;
+    //             // y: j * 74px;
+    //             width: 64px;
+    //             height: 64px;
+    
+    //             clicked => {
+    //                 self.active = !self.active;
+    //                 root.update();
+    //             }
+    //     }
+    
+    
+    // }
+    //  }
+   
