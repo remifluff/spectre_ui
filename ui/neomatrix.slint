@@ -1,0 +1,113 @@
+import { Page } from "page.slint";
+import { Node, NodeData } from "node.slint";
+
+
+export component Neomatrix inherits Page{
+
+    in property <[NodeData]> nodes: [
+];
+
+    callback update(int, int);
+
+    in property <int> row_count: 5;
+    in property <[string]> rows:[
+        "row_1", "row_2", "row_3","row_4","row_5"
+     ];
+
+    in property <int> col_count: 3;
+    in property <[string]> columns:[
+       "col_1", "col_2", "col_3"
+    ];
+
+
+
+ Rectangle {
+    width: root.width;
+    height: root.height;
+    
+    property <physical-length> box_size: min(
+        (self.width / (col_count+2)), (self.height/(row-count+2))
+    );
+    property <physical-length> spacing: 1px;
+
+    for col_name[i] in columns : Node {      
+        x: (i +1) * (box_size + spacing);
+        y: 0;
+
+        text: col_name;
+        width: box_size;
+        height: box_size;
+
+    }
+
+
+    for row_names[i] in rows : Node {   
+        x: 0 ;   
+        y: (i +1) * (box_size + spacing);
+
+        text: row_names;
+        width: box_size;
+        height: box_size;
+
+    }
+
+     for node[i] in nodes: Node{
+        property <physical-length> xx: (node.col-index + 1) * (box_size + spacing);
+        property <physical-length> yy: (node.row-index + 1) * (box_size + spacing);
+
+        x: xx;
+        y: yy;
+
+        width: box_size;
+        height: box_size;
+
+        row-index: node.row-index + 1;
+        col-index: node.col-index + 1;
+      
+
+
+
+//draw connecting lines
+        Rectangle {
+            // background: white;
+            width: root.width;
+            height: root.height;
+
+            x: -xx;
+            y: -yy;
+            visible: node.active;
+
+            Path {
+                viewbox-width: root.width/1px;
+                viewbox-height: root.height/1px;
+                width: root.width;
+                height: root.height;
+
+                stroke: blue;
+                stroke-width: 1px;
+                MoveTo {
+                    x: 0;
+                    y: yy/1px;
+                }
+                LineTo {
+                    x: xx/1px;
+                    y: yy/1px;
+                }
+                LineTo {
+                    x: xx/1px;
+                    y: 0;
+                }
+                
+            }
+        }
+
+        clicked => {
+            node.active = !node.active;
+            self.active = !self.active;
+            root.update(node.row_index, node.col_index);
+        }
+    }
+
+ }
+
+}

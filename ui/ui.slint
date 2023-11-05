@@ -1,54 +1,31 @@
-component Node inherits Rectangle{
-    callback clicked;
-    in property <bool> active: false;
-
-
-    min-height: 20px;
-    min-width: 20px;
-    in property <string> text;
-
-    // property <bool> active: false;
-
-    Rectangle {
-        background: active ? red:  #193076;
-
-    //     ta := TouchArea{
-    //         clicked => {active = !active}
-        }
-
-    // }
-    TouchArea {
-        clicked => {
-            // Delegate to the user of this element
-            root.clicked();
-        }
-    }
-    Text {text: root.text; color: #151716;}
-
-    Path {
-        x: root.x;
-    }
-}
-
-struct NodeData{
-
-    active: bool,
-    row_index: int,
-    col_index: int,
-
-}
-
-
+import { Neomatrix } from "neomatrix.slint";
+import { Node, NodeData } from "node.slint";
 
 export component MainWindow inherits Window {
-    // width: 326px;
-    // height: 326px;
+    background: #000000;
 
 
 
-    in property <[NodeData]> nodes: [];
+    callback update(int, int);
 
-    callback update();
+
+    in property <[NodeData]> nodes: [
+        {active: false, row_index: 0, col_index: 0,},
+        {active: false, row_index: 1, col_index: 0,},
+        {active: false, row_index: 2, col_index: 0,},
+        {active: false, row_index: 3, col_index: 0,},
+        {active: false, row_index: 4, col_index: 0,},
+        {active: false, row_index: 0, col_index: 1,},
+        {active: false, row_index: 1, col_index: 1,},
+        {active: false, row_index: 2, col_index: 1,},
+        {active: false, row_index: 3, col_index: 1,},
+        {active: false, row_index: 4, col_index: 1,},
+        {active: false, row_index: 0, col_index: 2,},
+        {active: false, row_index: 1, col_index: 2,},
+        {active: false, row_index: 2, col_index: 2,},
+        {active: false, row_index: 3, col_index: 2,},
+        {active: false, row_index: 4, col_index: 2,},
+];
 
     in property <int> row_count: 5;
     in property <[string]> rows:[
@@ -61,107 +38,19 @@ export component MainWindow inherits Window {
     ];
 
 
-
- Rectangle {
-    width: root.width;
-    height: root.height;
-    property <physical-length> box_size: min(
-        (self.width / (col_count+2)), (self.height/(row-count+2))
-    );
-    property <physical-length> spacing: 1px;
-
-    for col_name[i] in columns : Node {      
-        x: (i +1) * (box_size + spacing);
-        y: 0;
-
-        text: col_name;
-        width: box_size;
-        height: box_size;
-
+    neo := Neomatrix{
+        row-count: row-count;
+        col-count: col-count;
+        rows: rows;
+        columns: columns;
+        nodes: nodes;
     }
 
-
-    for row_names[i] in rows : Node {   
-        x: 0 ;   
-        y: (i +1) * (box_size + spacing);
-
-        text: row_names;
-        width: box_size;
-        height: box_size;
-
-    }
-
-     for node[i] in nodes: Node{
-        x: (node.col-index + 1) * (box_size + spacing);
-        y: (node.row-index + 1) * (box_size + spacing);
-
-        width: box_size;
-        height: box_size;
-
-        // text: "row" + node.row-index + " - col" + node.col-index;
-
-        clicked => {
-            self.active = !self.active;
-            root.update();
-        }
-    }
-
- }
 
    
 }
 
-    //  VerticalLayout{
-    //     //
-    //     spacing: 5px;
-     
-
-    //     HorizontalLayout{
-            
-    //         spacing: 5px;
-    //         Node{
-    //             text: "";
-    //         }
-
-    //         for col_name[j] in columns : Node {
-                
-    //             text: col_name;
-
-         
-    //             width: 64px;
-    //             height: 64px;
-    
-               
-    //     }
-    //     }
-    //     for row_names[i] in rows : HorizontalLayout {
 
 
 
-    //         spacing: 5px;
-    //        //add row title
-    //         Node{
-    //             text: row_names;
-    //             width: 64px;
-    //             height: 64px;
-    //         }
 
-    //         for col_name[j] in columns : Node {
-                
-              
-                
-    //             // x: i * 74px;
-    //             // y: j * 74px;
-    //             width: 64px;
-    //             height: 64px;
-    
-    //             clicked => {
-    //                 self.active = !self.active;
-    //                 root.update();
-    //             }
-    //     }
-    
-    
-    // }
-    //  }
-   

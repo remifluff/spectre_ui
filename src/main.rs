@@ -1,11 +1,15 @@
-use slint::{slint, SharedString};
+use std::fmt::format;
+
+use slint::{slint, Model, SharedString};
+
+slint::include_modules!();
 
 fn main() {
     // println!("Hello, world!");
-    let main_window = MainWindow::new().unwrap();
+    let neo_matrix = MainWindow::new().unwrap();
 
     let rows = vec!["row_1", "row_2", "row_3", "row_4", "row_5"];
-    let cols = vec!["col_1", "col_2", "yo"];
+    let cols = vec!["col_1", "col_2", "col_3", "col_4", "col_5", "col_6", "col_7", "col_8", "col_9"];
 
     let mut nodes: Vec<NodeData> = vec![];
 
@@ -16,28 +20,53 @@ fn main() {
     }
 
     nodes.len();
-    // let col_names = std::rc::Rc::new
-    main_window.set_col_count(cols.len() as i32);
-    main_window.set_columns(slint_type_crap(cols).into());
 
-    main_window.set_row_count(rows.len() as i32);
-    main_window.set_rows(slint_type_crap(rows).into());
+    neo_matrix.set_col_count(cols.len() as i32);
+    neo_matrix.set_columns(slint_type_crap(cols).into());
 
-    main_window.set_nodes(std::rc::Rc::new(slint::VecModel::from(nodes)).into());
+    neo_matrix.set_row_count(rows.len() as i32);
+    neo_matrix.set_rows(slint_type_crap(rows).into());
 
-    let main_window_weak = main_window.as_weak();
+    // let mut nodes_model: Vec<NodeData> =
+    // main_window.get_nodes().iter().collect();
 
-    main_window.on_update(move || {});
+    neo_matrix.set_nodes(std::rc::Rc::new(slint::VecModel::from(nodes)).into());
 
-    main_window.run().unwrap();
+    let main_window_weak = neo_matrix.as_weak();
+
+    // std::rc::Rc::new(slint::VecModel::from(tiles));
+
+    println!("{}", "hi");
+
+    neo_matrix.on_update(move |row, col| {
+        let nodes_model: Vec<NodeData> = main_window_weak.unwrap().get_nodes().iter().collect();
+
+        // println!("{}, {}", row, col);
+
+        let binary_string = nodes_model
+            .iter()
+            .filter(|node| node.row_index == row)
+            .map(|node| if node.active { "1" } else { "0" })
+            .fold("".to_owned(), |acc, new_string| format!("{}{}", acc, new_string));
+
+        let patch_integer = u64::from_str_radix(&binary_string, 2).unwrap();
+
+        println!("D.M.{:02}.{:020}", row, patch_integer,);
+
+        // let x = format!("{:0>64}", x);
+        // println!("u64: {:020} - binary {:b}", x, x);
+        // .for_each(|i| print!("{}", i));
+    });
+
+    neo_matrix.run().unwrap();
 }
-slint!( import {MainWindow} from "ui/ui.slint";);
 
 fn slint_type_crap(names: Vec<&str>) -> std::rc::Rc<slint::VecModel<SharedString>> {
     std::rc::Rc::new(slint::VecModel::from(
         names.iter().map(|name| Into::<SharedString>::into(*name)).collect::<Vec<SharedString>>(),
     ))
 }
+
 // let cols = vec![
 //         "invert_x_0",
 //         "invert_x_1",

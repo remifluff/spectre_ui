@@ -1,0 +1,103 @@
+export component Node inherits Rectangle{
+    callback clicked;
+    in property <bool> active: false;
+
+    property <color> hover_on: #C884AD;
+    property <color> active_no_hover:  #383838;
+    property <color> active_with_hover: #e761b1;
+
+
+    in property <physical-length> center_x;
+    in property <physical-length> center_y;
+    in property <physical-length> top_corner_x;
+    in property <physical-length> top_corner_y;
+
+
+    in property <int> row_index;
+    in property <int> col_index;
+
+    Path {
+        
+        viewbox-width: 1;
+        viewbox-height: 1;
+
+        stroke: blue;
+        stroke-width: 1px;
+    
+        in property <int> y_path: center_y/1px;
+        in property <int> x_path: center_x/1px;
+
+
+        MoveTo {
+            x: 0;
+            y: y_path;
+        }
+        LineTo {
+            x: x_path;
+            y: y_path;
+        }
+        LineTo {
+            x: x_path;
+            y: 0;
+        }
+        LineTo {
+            x: 0;
+            y: 0;
+        }
+        LineTo {
+            x: 0;
+            y: y_path;
+        }
+   
+    }
+
+    x: 0;
+    y: 0;
+
+    min-height: 20px;
+    min-width: 20px;
+    in property <string> text;
+
+    bounding := Rectangle {
+        width: center-x;
+        height: center-y;
+        background: wheat;
+        visible: root.active;
+        x: -top-corner-x;
+        y: -top-corner-y;
+       
+    }
+ 
+
+    Rectangle {
+
+        background:  active ? (ta.has-hover ? active_with_hover: active_no_hover) : hover_on;
+        visible: active || ta.has-hover;
+
+   
+        }
+
+        ta := TouchArea {
+            clicked => {
+                // Delegate to the user of this element
+                root.clicked();
+            }
+        }
+    
+
+    Text {text: root.text; color: #ecedec;}
+
+    Path {
+        x: root.x;
+    }
+}
+
+export struct NodeData{
+
+    active: bool,
+    row_index: int,
+    col_index: int,
+
+}
+
+
